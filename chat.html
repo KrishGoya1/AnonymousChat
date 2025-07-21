@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lobby Chat</title>
+  <link rel="stylesheet" href="/static/style.css">
+
+
+</head>
+<body>
+  <h2>Hacker's Chat</h2>
+  <input id="lobby" placeholder="Lobby Code" />
+  <input id="username" placeholder="Your Name" />
+  <button onclick="connect()">Join</button>
+
+  <div id="chat"></div>
+  <input id="message" placeholder="Type a message" onkeydown="if(event.key==='Enter') send()" />
+  <button onclick="send()">Send</button>
+
+  <script>
+    let socket;
+    let username = "";
+
+    function connect() {
+      const lobby = document.getElementById("lobby").value.trim();
+      username = document.getElementById("username").value.trim();
+      if (!lobby || !username) return alert("Lobby and username required");
+
+      socket = new WebSocket(`ws://${location.host}/ws/${lobby}/${username}`);
+      socket.onmessage = e => {
+        const chat = document.getElementById("chat");
+        const msgText = e.data;
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          chat.innerHTML += `<div class="msg">[${time}] ${escapeHTML(msgText)}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+    };
+
+
+      document.getElementById("chat").innerHTML = "";
+    }
+
+    function escapeHTML(str) {
+  return str.replace(/[&<>"']/g, function (tag) {
+    const chars = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return chars[tag] || tag;
+  });
+}
+
+
+    function send() {
+        const msgInput = document.getElementById("message");
+        const msg = msgInput.value.trim();
+        if (!msg || !socket) return;
+        socket.send(msg);
+        msgInput.value = "";
+    }
+
+  </script>
+</body>
+</html>
