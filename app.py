@@ -1,4 +1,4 @@
-# app.py
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from collections import defaultdict
@@ -85,7 +85,10 @@ def wait_for_shutdown():
             break
 
 # Start the shutdown watcher thread
-threading.Thread(target=wait_for_shutdown, daemon=True).start()
+import sys
+if sys.stdin.isatty():
+    threading.Thread(target=wait_for_shutdown, daemon=True).start()
+
 
 # Custom event loop to inject shutdown
 import uvicorn
