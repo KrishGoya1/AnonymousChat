@@ -26,7 +26,7 @@
       if (!lobby || !username) return alert("Lobby and username required");
 
       const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-      const socket = new WebSocket(`${protocol}://${window.location.host}/ws/${lobby}/${username}`);
+      socket = new WebSocket(`${protocol}://${window.location.host}/ws/${lobby}/${username}`);
 
       socket.onmessage = e => {
         const chat = document.getElementById("chat");
